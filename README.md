@@ -2,6 +2,8 @@
 
 A LangGraph + FastAPI service that classifies software products under the [EU AI Act](https://www.europarl.europa.eu/topics/en/article/20230601STO93804/eu-ai-act-first-regulation-on-artificial-intelligence) risk framework.
 
+> **Educational tool only.** This project is intended for learning and demonstration purposes. It does not constitute legal advice and should not be used as the basis for EU AI Act compliance decisions.
+
 ## Risk Categories
 
 | Category | Description |
