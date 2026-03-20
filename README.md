@@ -1,20 +1,28 @@
-# EU AI Act Classifier Demo
+# EU AI Act Risk Classifier Agent
 
-A LangGraph + FastAPI classifier that categorizes software products under the EU AI Act, with Promptfoo shim integration for automated evaluation.
+A LangGraph + FastAPI service that classifies software products under the [EU AI Act](https://www.europarl.europa.eu/topics/en/article/20230601STO93804/eu-ai-act-first-regulation-on-artificial-intelligence) risk framework.
+
+## Risk Categories
+
+| Category | Description |
+|----------|-------------|
+| `prohibited` | Banned systems — social scoring, real-time biometric surveillance, subliminal manipulation |
+| `high_risk` | Critical infrastructure, employment, law enforcement, medical devices, education |
+| `limited_risk` | Transparency obligations required — chatbots, emotion recognition, deepfakes |
+| `minimal_risk` | All other AI — spam filters, recommendation systems, game AI |
 
 ## Architecture
 
 ```
-FastAPI endpoint (/classify)
-       │
-       ▼
+POST /classify
+      │
+      ▼
 LangGraph StateGraph
-  START → classify (LLM call) → conditional routing → handler → END
-                                   │
-                            prohibited / high_risk / limited_risk / minimal_risk
-
-Promptfoo shim (promptfoo_shim.py)
-  call_api(prompt) → graph.invoke() → {"output": json_result}
+  START → classify (LLM) → conditional routing
+                               ├── prohibited
+                               ├── high_risk
+                               ├── limited_risk
+                               └── minimal_risk → END
 ```
 
 ## Setup
@@ -24,32 +32,41 @@ uv sync
 echo "OPENAI_API_KEY=sk-..." > .env
 ```
 
-## Run the API
+## Running
 
 ```bash
 uv run uvicorn app:app --port 8000
 ```
 
-Test it:
+## API
+
+### `POST /classify`
+
 ```bash
 curl -X POST http://localhost:8000/classify \
   -H "Content-Type: application/json" \
-  -d '{"product_name": "MailGuard", "description": "AI spam filter"}'
+  -d '{"product_name": "HireBot", "description": "AI that ranks job candidates based on resume and video analysis."}'
 ```
 
-## Run Promptfoo Evaluation
+```json
+{
+  "product_name": "HireBot",
+  "classification": "high_risk",
+  "reasoning": "HireBot is used in employment decisions, which falls under Annex III of the EU AI Act as a high-risk application. Systems that evaluate candidates for jobs are subject to strict requirements around transparency, accuracy, and human oversight.",
+  "confidence": 0.95
+}
+```
+
+### `GET /health`
 
 ```bash
-export $(cat .env | xargs)
-npx promptfoo@latest eval
-npx promptfoo view  # open browser results UI
+curl http://localhost:8000/health
 ```
 
-## EU AI Act Risk Categories
+### `GET /graph`
 
-| Category | Examples |
-|----------|---------|
-| `prohibited` | Social scoring, real-time biometric surveillance, subliminal manipulation |
-| `high_risk` | CV screening, medical diagnosis, law enforcement tools, credit scoring |
-| `limited_risk` | Chatbots, deepfake generators, emotion recognition |
-| `minimal_risk` | Spam filters, game AI, recommendation systems |
+Returns a Mermaid diagram of the classification graph.
+
+```bash
+curl http://localhost:8000/graph
+```
