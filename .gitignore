@@ -13,5 +13,7 @@ wheels/
 .env
 .env.*
 
-# Promptfoo output
+# Promptfoo
+promptfoo_shim.py
+promptfooconfig.yaml
 promptfoo-results.json
