@@ -1,0 +1,13 @@
+[project]
+name = "eu-ai-act-classifier"
+version = "0.1.0"
+description = "EU AI Act risk classifier using LangGraph + FastAPI"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.111.0",
+    "uvicorn[standard]>=0.30.0",
+    "langgraph>=0.2.0",
+    "langchain-openai>=0.1.0",
+    "langchain-core>=0.2.0",
+    "python-dotenv>=1.0.0",
+]
